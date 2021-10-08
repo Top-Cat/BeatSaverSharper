@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace BeatSaverSharp
 {
@@ -46,6 +47,7 @@ namespace BeatSaverSharp
         public BeatSaver(BeatSaverOptions beatSaverOptions)
         {
             _options = beatSaverOptions;
+
             string userAgent = $"{beatSaverOptions.ApplicationName}/{beatSaverOptions.Version}";
 #if RELEASE_UNITY
             _httpService = new UnityWebRequestService()
@@ -161,7 +163,9 @@ namespace BeatSaverSharp
                         // DateTimes need to be formatted to conform to ISO
                         if (filterValue is DateTime dateTime)
                             filterValue = dateTime.ToString("yyyy-MM-ddTHH:mm:ssZ"); // yyyy-MM-dd
-                        queryProps.Add($"{property.Item1}={filterValue}");
+
+                        var encoded = HttpUtility.UrlEncode(filterValue.ToString(), Encoding.Default);
+                        queryProps.Add($"{property.Item1}={encoded}");
                     }
                 }
 
